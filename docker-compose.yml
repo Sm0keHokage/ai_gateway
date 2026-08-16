@@ -1,0 +1,71 @@
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ai_gateway
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ai_gateway"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    networks:
+      - internal_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  xray:
+    image: teddysun/xray:latest
+    container_name: ai-gateway-xray
+    restart: unless-stopped
+    profiles: ["proxy"]
+    volumes:
+      - type: bind
+        source: ./xray.json
+        target: /etc/xray/config.json
+        read_only: true
+    networks:
+      - internal_net
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 10808 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  ai_gateway:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8100:8100"
+    networks:
+      - internal_net
+    env_file:
+      - .env
+    environment:
+      SERVICE_HOST: "0.0.0.0"
+      DB_HOST: db
+      DB_PORT: "5432"
+      REDIS_URL: "redis://redis:6379/0"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+networks:
+  internal_net:
+    driver: bridge
