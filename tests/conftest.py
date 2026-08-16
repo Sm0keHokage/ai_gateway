@@ -9,19 +9,19 @@ os.environ.setdefault("ANTHROPIC_API_KEY", "test-anthropic-key")
 os.environ.setdefault("GEMINI_API_KEY", "test-gemini-key")
 os.environ.setdefault("RATE_LIMIT_PER_MINUTE", "5")
 
-import pytest
-import pytest_asyncio
-import fakeredis.aioredis
-from httpx import AsyncClient, ASGITransport
-from unittest.mock import AsyncMock, MagicMock
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from app.db.database import Base, get_db, get_session_maker
-from app.db.repositories import ApiKeyRepository
-from app.security import hash_key
-from app.redis_client import get_redis
-from app.dependencies import get_llm_router
-from app.router import LLMRouter
-from app.schema import LLMProvider, UsageInfo
+import pytest  # noqa: E402
+import pytest_asyncio  # noqa: E402
+import fakeredis.aioredis  # noqa: E402
+from httpx import AsyncClient, ASGITransport  # noqa: E402
+from unittest.mock import AsyncMock, MagicMock  # noqa: E402
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker  # noqa: E402
+from app.db.database import Base, get_db, get_session_maker  # noqa: E402
+from app.db.repositories import ApiKeyRepository  # noqa: E402
+from app.security import hash_key  # noqa: E402
+from app.redis_client import get_redis  # noqa: E402
+from app.dependencies import get_llm_router  # noqa: E402
+from app.router import LLMRouter  # noqa: E402
+from app.schema import LLMProvider, UsageInfo  # noqa: E402
 
 
 @pytest_asyncio.fixture

@@ -15,9 +15,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from app.db.database import session_local
-from app.db.repositories import ApiKeyRepository
-from app.security import hash_key
+from app.db.database import session_local  # noqa: E402
+from app.db.repositories import ApiKeyRepository  # noqa: E402
+from app.security import hash_key  # noqa: E402
 
 
 async def create_key(name: str, rate_limit: int | None):
